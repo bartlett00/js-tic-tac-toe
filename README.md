@@ -1,1 +1,1 @@
-# js-tic-tac-toe
+This is a browser tic-tac-toe game for The Odin Project's Javascript course.
