@@ -29,7 +29,7 @@ function Gameboard() {
     }
 
     const printBoard = () => {
-        console.log(getBoard());
+        console.log(getBoard().map(row => row.map(tile => tile.getValue())));
     }
 
     return { playXorO, getBoard, printBoard };
@@ -69,14 +69,16 @@ function Controller(
         const selectedTile = (board.getBoard())[row][column];
         if(selectedTile.getValue() === 0) {
             board.playXorO(row, column, getCurrentPlayer().symbol);
-            changeTurn();
-            printRound();
+            checkWin();
         }
     };
 
     const checkWin = () => {
-        //check state of board
 
+        let win = false;
+        let draw = false;
+        const getWin = () => win;
+        const getDraw  = () => draw;
         const winConditions = {
             row1: [1,1,1, 0,0,0, 0,0,0],
             row2: [0,0,0, 1,1,1, 0,0,0],
@@ -92,19 +94,8 @@ function Controller(
         (board.getBoard()).map(row => {
             row.map(tile => valueArr.push(tile.getValue()));
         });
-        console.log(valueArr);
-/*
-        let playerTiles = {
-            row1: valueArr.slice(0, 3),
-            row2: valueArr.slice(3, 6),
-            row3: valueArr.slice(6),
-            col1: [valueArr[0], valueArr[3], valueArr[6]],
-            col2: [valueArr[1], valueArr[4], valueArr[7]],
-            col3: [valueArr[2], valueArr[5], valueArr[8]],
-            diag1: [valueArr[0], valueArr[4], valueArr[8]],
-            daig2: [valueArr[2], valueArr[4], valueArr[6]]
-        };
-*/
+        //console.log(valueArr);
+
         let playerTiles = [
             valueArr.slice(0, 3),
             valueArr.slice(3, 6),
@@ -118,31 +109,78 @@ function Controller(
 
 
         const threeInARow = (tileSet) => tileSet.every(value => value === tileSet[0]);
-        console.log(threeInARow(playerTiles[0]));
+
+        let winningArr;
 
         playerTiles.forEach(array => {
-            if(threeInARow(array) == true) {
-                return true;
-            } else {
-                return false;
-            }
+            if(threeInARow(array) == true && array[0] !== 0) {
+                win = true;
+                winningArr = array;
+                //console.log(winningArr);
+                console.log(`${getCurrentPlayer().name} wins!`);
+                board.printBoard();
+                return;
+            } 
         });
-        //look for winner (8 ways of winning)
-        //end game if winner/draw
+        
+        if(!(valueArr.includes(0))) {
+            draw = true;
+            win = false;
+            console.log('its a draw!');
+            board.printBoard();
+            return;
+        }
+
+        if(!win && !draw) {
+            changeTurn();
+            printRound();
+            return;
+        }
     }
 
-    printRound();
+    //printRound();
 
     return {playRound, getCurrentPlayer, checkWin};
 }
 
 const game = Controller();
-
-game.playRound(1, 2);
-game.playRound(2, 1);
-game.playRound(1, 1);
+const game2 = Controller();
+const game3 = Controller();
+const game4 = Controller();
+//tie 
+/*
+game.playRound(0,0);
+game.playRound(1,0);
+game.playRound(2,0);
 game.playRound(0,1);
-game.playRound(1, 0);
-
-console.log(game.checkWin());
-
+game.playRound(0,2);
+game.playRound(2,2);
+game.playRound(2,1);
+game.playRound(1,1);
+game.playRound(1,2);
+*/
+//player 1 wins (column)
+/*
+game2.playRound(0,0);
+game2.playRound(2, 2);
+game2.playRound(1,0)
+game2.playRound(0, 1)
+game2.playRound(2,0);
+*/
+//player 2 wins (diag)
+/*
+game3.playRound(0,0)
+game3.playRound(0,1)
+game3.playRound(2,2)
+game3.playRound(1,1)
+game3.playRound(2,1)
+game3.playRound(0,2)
+game3.playRound(1,2)
+game3.playRound(2,0)
+*/
+//any player wins (row)
+game4.playRound(0,0)
+game4.playRound(1,0)
+game4.playRound(0,1)
+game4.playRound(1,1)
+game4.playRound(0,2)
