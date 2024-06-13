@@ -22,7 +22,7 @@ function Gameboard() {
     const playXorO = (row, column, player) => {
         if(board[row][column].getValue() === 0) {
             board[row][column].XorO(player);
-            console.log(board[row][column].getValue());
+            //console.log(board[row][column].getValue());
         } else {
             return;
         }
@@ -33,18 +33,17 @@ function Gameboard() {
     }
 
     return { playXorO, getBoard, printBoard };
-}
+};
 
-//method for checking for ending the game(win or draw)
-//method for changing player turn (round based)
+
 function Controller(
-    playerOne = 'player one', 
+    playerOne = 'player one',
     playerTwo = 'player two') {
     const board = Gameboard();
     const players = [
         {
             name: playerOne,
-            symbol: 1 
+            symbol: 1
         },
         {
             name: playerTwo,
@@ -79,22 +78,12 @@ function Controller(
         let draw = false;
         const getWin = () => win;
         const getDraw  = () => draw;
-        const winConditions = {
-            row1: [1,1,1, 0,0,0, 0,0,0],
-            row2: [0,0,0, 1,1,1, 0,0,0],
-            row3: [0,0,0, 0,0,0, 1,1,1],
-            col1: [1,0,0, 1,0,0, 1,0,0],
-            col2: [0,1,0, 0,1,0, 0,1,0],
-            col3: [0,0,1, 0,0,1, 0,0,1],
-            diag1: [1,0,0, 0,1,0, 0,0,1],
-            diag2: [0,0,1, 0,1,0, 1,0,0]
-        };
 
         let valueArr = [];
         (board.getBoard()).map(row => {
             row.map(tile => valueArr.push(tile.getValue()));
         });
-        //console.log(valueArr);
+
 
         let playerTiles = [
             valueArr.slice(0, 3),
@@ -116,13 +105,12 @@ function Controller(
             if(threeInARow(array) == true && array[0] !== 0) {
                 win = true;
                 winningArr = array;
-                //console.log(winningArr);
                 console.log(`${getCurrentPlayer().name} wins!`);
                 board.printBoard();
                 return;
-            } 
+            }
         });
-        
+
         if(!(valueArr.includes(0))) {
             draw = true;
             win = false;
@@ -138,49 +126,45 @@ function Controller(
         }
     }
 
-    //printRound();
-
     return {playRound, getCurrentPlayer, checkWin};
-}
+};
 
-const game = Controller();
-const game2 = Controller();
-const game3 = Controller();
-const game4 = Controller();
-//tie 
-/*
-game.playRound(0,0);
-game.playRound(1,0);
-game.playRound(2,0);
-game.playRound(0,1);
-game.playRound(0,2);
-game.playRound(2,2);
-game.playRound(2,1);
-game.playRound(1,1);
-game.playRound(1,2);
-*/
-//player 1 wins (column)
-/*
-game2.playRound(0,0);
-game2.playRound(2, 2);
-game2.playRound(1,0)
-game2.playRound(0, 1)
-game2.playRound(2,0);
-*/
-//player 2 wins (diag)
-/*
-game3.playRound(0,0)
-game3.playRound(0,1)
-game3.playRound(2,2)
-game3.playRound(1,1)
-game3.playRound(2,1)
-game3.playRound(0,2)
-game3.playRound(1,2)
-game3.playRound(2,0)
-*/
-//any player wins (row)
-game4.playRound(0,0)
-game4.playRound(1,0)
-game4.playRound(0,1)
-game4.playRound(1,1)
-game4.playRound(0,2)
+const display = (function Display() {
+    const controller = Controller();
+    const gameboard = Gameboard();
+    const body = document.querySelector('body');
+
+
+    const renderGameboard = () => {
+        const boardContainer = document.createElement('div');
+        boardContainer.classList.add('board');
+        body.appendChild(boardContainer);
+        for(let i = 0; i < 3; i++) {
+            console.log(i);
+            const boardRow = document.createElement('div');
+            boardRow.classList.toggle('row');
+            boardRow.setAttribute('data-row', i);
+            boardContainer.appendChild(boardRow);
+            for (let j = 0; j < 3; j++) {
+                console.log(j);
+                const boardTile = document.createElement('div');
+                boardTile.setAttribute('data-column', j);
+                boardTile.setAttribute('data-row', boardRow.dataset.row);
+                boardTile.addEventListener('click', handlePlaceSymbol(boardTile.dataset.row, boardTile.dataset.column));
+                boardTile.classList.toggle('tile');
+                boardRow.appendChild(boardTile);
+            }
+        }
+
+    }
+
+     function handlePlaceSymbol(row, column) {
+        gameboard.playXorO(parseInt(row), parseInt(column));
+     }
+
+
+
+    return { renderGameboard};
+})();
+
+display.renderGameboard();

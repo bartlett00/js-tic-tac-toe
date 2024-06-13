@@ -1,0 +1,15 @@
+.tile {
+    border: 1px solid red;
+    height: 100px;
+}
+
+.board {
+    border: 1px solid black;
+    display: grid;
+    grid-template-rows: repeat(3, auto);
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
