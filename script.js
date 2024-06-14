@@ -22,7 +22,6 @@ function Gameboard() {
     const playXorO = (row, column, player) => {
         if(board[row][column].getValue() === 0) {
             board[row][column].XorO(player);
-            //console.log(board[row][column].getValue());
         } else {
             return;
         }
@@ -56,16 +55,20 @@ function Controller(
 
     const getWin = () => win;
     const getDraw = () => draw;
-
+    
+    
+    const getDisplayText = () => displayText;
+    
     const changeTurn = () => {
         currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
     };
 
     const getCurrentPlayer = () => currentPlayer;
+    let displayText = `${getCurrentPlayer().name} start!`;
 
     const printRound = () => {
         board.printBoard();
-        console.log(`${getCurrentPlayer().name} turn`);
+        displayText = `${getCurrentPlayer().name} turn`;
     };
 
     const playRound = (row, column) => {
@@ -79,14 +82,10 @@ function Controller(
     };
 
     const checkWin = () => {
-
-
-
         let valueArr = [];
         (board.getBoard()).map(row => {
             row.map(tile => valueArr.push(tile.getValue()));
         });
-
 
         let playerTiles = [
             valueArr.slice(0, 3),
@@ -99,7 +98,6 @@ function Controller(
             [valueArr[2], valueArr[4], valueArr[6]]
         ];
 
-
         const threeInARow = (tileSet) => tileSet.every(value => value === tileSet[0]);
 
         let winningArr;
@@ -108,7 +106,7 @@ function Controller(
                 if(threeInARow(array) == true && array[0] !== 0) {
                     win = true;
                     winningArr = array;
-                    console.log(`${getCurrentPlayer().name} wins!`);
+                    displayText =`${getCurrentPlayer().name} wins!`;
                     board.printBoard();
                     return;
                 }
@@ -118,7 +116,7 @@ function Controller(
             if(!win) {
                 draw = true;
                 win = false;
-                console.log('its a draw!');
+                displayText = 'its a draw!';
                 board.printBoard();
                 return;
             }
@@ -131,11 +129,11 @@ function Controller(
         }
     }
 
-    return {playRound, getCurrentPlayer, checkWin, getWin, getDraw};
+    return {playRound, getCurrentPlayer, checkWin, getWin, getDraw, getDisplayText };
 };
 
 const display = (function Display() {
-    const controller = Controller();
+    let controller = Controller();
     const body = document.querySelector('body');
 
 
@@ -162,12 +160,16 @@ const display = (function Display() {
                                 parseInt(row),
                                 parseInt(col)
                             );
-                            if(playerSymbol === 1) {
-                                boardTile.textContent = 'X';
-                            } else if(playerSymbol === 2) {
-                                boardTile.textContent = 'O';
-                            }
+                           if(boardTile.textContent == '') {
+                                if(playerSymbol === 1) {
+                                    boardTile.textContent = 'X';
+                                } else if(playerSymbol === 2) {
+                                    boardTile.textContent = 'O';
+                                }
+                           } 
+
                         }
+                        changeTextDisplay(controller.getDisplayText());
                     }    
                 );
 
@@ -180,12 +182,15 @@ const display = (function Display() {
     const renderStartBtn = () => {
             const startBtn = document.createElement('button');
             startBtn.textContent = 'Start';
+            startBtn.classList.toggle('start-btn');
             startBtn.addEventListener('click', 
                 function() {
                     console.log(body.children);
                     if(body.contains(document.querySelector('div.board'))) {
                         body.removeChild(document.querySelector('div.board'));
                     }
+                    controller = Controller();
+                    changeTextDisplay(controller.getDisplayText());
                     renderGameboard();
                     body.contains(document.querySelector('div.board')) ? startBtn.textContent = 'Restart' : startBtn.textContent = 'Start';
                 }
@@ -194,7 +199,13 @@ const display = (function Display() {
         }
     renderStartBtn();
 
-    return { renderGameboard};
-})();
+    const textDisplay = document.createElement('div');
+    textDisplay.classList.toggle('text-display');
+    body.appendChild(textDisplay);
+    textDisplay.textContent = controller.getDisplayText();
 
-// display.renderGameboard();
+    const changeTextDisplay = (text) => {
+        textDisplay.textContent = text;
+    }
+
+})();
