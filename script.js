@@ -76,8 +76,6 @@ function Controller(
 
         let win = false;
         let draw = false;
-        const getWin = () => win;
-        const getDraw  = () => draw;
 
         let valueArr = [];
         (board.getBoard()).map(row => {
@@ -131,7 +129,7 @@ function Controller(
 
 const display = (function Display() {
     const controller = Controller();
-    const gameboard = Gameboard();
+    // const gameboard = Gameboard();
     const body = document.querySelector('body');
 
 
@@ -140,27 +138,36 @@ const display = (function Display() {
         boardContainer.classList.add('board');
         body.appendChild(boardContainer);
         for(let i = 0; i < 3; i++) {
-            console.log(i);
             const boardRow = document.createElement('div');
             boardRow.classList.toggle('row');
             boardRow.setAttribute('data-row', i);
             boardContainer.appendChild(boardRow);
             for (let j = 0; j < 3; j++) {
-                console.log(j);
-                const boardTile = document.createElement('div');
+                const boardTile = document.createElement('button');
                 boardTile.setAttribute('data-column', j);
                 boardTile.setAttribute('data-row', boardRow.dataset.row);
-                boardTile.addEventListener('click', handlePlaceSymbol(boardTile.dataset.row, boardTile.dataset.column));
+                boardTile.addEventListener('click', 
+                    function() {
+                        const row = parseInt(boardTile.dataset.row);
+                        const col = parseInt(boardTile.dataset.column);
+                        let playerSymbol = controller.getCurrentPlayer().symbol;
+                        controller.playRound(
+                            parseInt(row),
+                            parseInt(col)
+                        );
+                        if(playerSymbol === 1) {
+                            boardTile.textContent = 'X';
+                        } else if(playerSymbol === 2) {
+                            boardTile.textContent = 'O';
+                        }
+                    }    
+                );
+
                 boardTile.classList.toggle('tile');
                 boardRow.appendChild(boardTile);
             }
         }
-
     }
-
-     function handlePlaceSymbol(row, column) {
-        gameboard.playXorO(parseInt(row), parseInt(column));
-     }
 
 
 
