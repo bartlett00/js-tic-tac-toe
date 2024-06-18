@@ -39,7 +39,7 @@ function Controller(
     playerOne = 'player one',
     playerTwo = 'player two') {
     const board = Gameboard();
-    const players = [
+    let players = [
         {
             name: playerOne,
             symbol: 1
@@ -61,6 +61,10 @@ function Controller(
     
     const changeTurn = () => {
         currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
+    };
+    
+    const setPlayer = (playerNum, name) => {
+        players[playerNum - 1].name = name;
     };
 
     const getCurrentPlayer = () => currentPlayer;
@@ -129,7 +133,15 @@ function Controller(
         }
     }
 
-    return {playRound, getCurrentPlayer, checkWin, getWin, getDraw, getDisplayText };
+    return { 
+        playRound, 
+        getCurrentPlayer, 
+        checkWin, 
+        getWin, 
+        getDraw, 
+        getDisplayText, 
+        setPlayer 
+    };
 };
 
 const display = (function Display() {
@@ -189,7 +201,7 @@ const display = (function Display() {
                     if(body.contains(document.querySelector('div.board'))) {
                         body.removeChild(document.querySelector('div.board'));
                     }
-                    controller = Controller();
+                    controller = Controller(name1, name2);
                     changeTextDisplay(controller.getDisplayText());
                     renderGameboard();
                     body.contains(document.querySelector('div.board')) ? startBtn.textContent = 'Restart' : startBtn.textContent = 'Start';
@@ -208,4 +220,21 @@ const display = (function Display() {
         textDisplay.textContent = text;
     }
 
+    const playerNames = document.querySelector('#namesForm');
+    let name1;
+    let name2;
+
+    playerNames.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let player1 = document.querySelector('#player-one').value;
+        let player2 = document.querySelector('#player-two').value;
+
+        name1 = player1;
+        name2 = player2;
+
+        controller.setPlayer(1, player1);
+        controller.setPlayer(2, player2);
+
+        changeTextDisplay(`${player1} starts!`);
+    });
 })();

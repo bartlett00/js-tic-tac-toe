@@ -4,7 +4,7 @@
 
 body {
     display: grid;
-    grid-template-rows: repeat(3, auto 1fr);
+    grid-template-rows: repeat(4, min-content);
     place-content: center;
     place-items: center;
     gap: 50px;
@@ -37,4 +37,18 @@ body {
 
 .text-display {
     
+}
+
+.name-input {
+
+}
+
+#namesForm {
+    display: grid;
+    grid-template-rows: repeat(3, min-content);
+}
+
+#submitBtn {
+    justify-self: center;
+    margin-top: 10px;
 }
