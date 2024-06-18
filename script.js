@@ -147,8 +147,7 @@ function Controller(
 const display = (function Display() {
     let controller = Controller();
     const body = document.querySelector('body');
-
-
+    
     const renderGameboard = () => {
         const boardContainer = document.createElement('div');
         boardContainer.classList.add('board');
